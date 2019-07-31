@@ -13,17 +13,25 @@ closing_prices = []
 @browser = Watir::Browser.new :chrome
 @browser.goto 'https://finance.yahoo.com/'
 
+retries = 0 
+
 tickers.each do |ticker|
-	@browser.input(xpath: '//input[@aria-label="Search" and @name="p"]')
-			  .wait_until_present(timeout: 30)
-			  .send_keys ticker
-	@browser.button(id: 'search-button')
-				  .wait_until_present(timeout: 30)
-	        .click
+	@search = @browser.input(xpath: '//input[contains(@aria-label,"Search")]')
+			  					  .wait_until_present(timeout: 30)
+  @search.send_keys ticker
+	@search_btn = @browser.button(id: 'search-button')
+				  							.wait_until_present(timeout: 30)
+  @search_btn.fire_event :onclick 
+
 	price = @browser.span(xpath: '//*[@id="quote-header-info"]/div[3]/div/div/span')
 									 .wait_until_present(timeout: 30)
 									 .text
-	closing_prices.push(price)
+ 	#######
+ 	hash = {}
+ 	hash[:symbol] = ticker
+ 	hash[:price] = price 
+	closing_prices.push(hash)
+	@browser.back
 end
 
 closing_prices.each { |e| puts e  }

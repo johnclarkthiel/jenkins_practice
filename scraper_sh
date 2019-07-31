@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo running scraper …
+bundle install
+ruby scraper.rb
